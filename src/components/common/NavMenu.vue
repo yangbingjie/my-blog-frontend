@@ -7,7 +7,7 @@
       background-color="white"
       text-color="#222"
       active-text-color="#606266" class="menu">
-      <h3 class="web-name">Bella's Blog</h3>
+      <h3 class="web-name">My Blog</h3>
       <el-menu-item v-for="(item,i) in navList" :key="i" :index="item.name">
         {{ item.navItem }}
       </el-menu-item>
@@ -15,10 +15,10 @@
     <el-dropdown @command="handleCommand">
       <el-button plain round type="info" icon="el-icon-user" class="icon"></el-button>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="a">Profile</el-dropdown-item>
-        <el-dropdown-item command="a">Settings</el-dropdown-item>
-        <el-dropdown-item command="d">Stars</el-dropdown-item>
-        <el-dropdown-item command="e" divided>Sign out</el-dropdown-item>
+        <el-dropdown-item command="profile">Profile</el-dropdown-item>
+        <el-dropdown-item command="settings">Settings</el-dropdown-item>
+        <el-dropdown-item command="stars">Stars</el-dropdown-item>
+        <el-dropdown-item command="signout" divided>Sign out</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -32,13 +32,17 @@ export default {
       navList: [
         {name: '/index', navItem: 'Home'},
         {name: '/article', navItem: 'Blog'},
-        {name: '/profile', navItem: 'More'}
+        {name: '/more', navItem: 'More'}
       ]
     }
   },
   methods: {
     handleCommand (command) {
       this.$message('click on item ' + command)
+      if (command === 'profile') {
+        let path = this.$route.query.redirect
+        this.$router.replace({path: path === '/' || path === undefined ? '/profile' : path})
+      }
     }
   }
 }

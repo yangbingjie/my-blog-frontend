@@ -133,7 +133,7 @@ export default {
     font-size: 14px;
   }
   .el-button+.el-button {
-     margin-left: 0;
+    margin-left: 0;
   }
   .title{
     text-align: left;

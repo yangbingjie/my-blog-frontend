@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Index from '@/components/Index'
 import Home from '@/components/Home'
+import More from '@/components/More'
 import Profile from '@/components/Profile'
 import Article from '@/components/Article'
 
@@ -12,7 +13,7 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/home',
+      path: '/',
       name: 'Home',
       component: Home,
       // home页面并不需要被访问
@@ -26,9 +27,9 @@ export default new Router({
             requireAuth: true
           }
         }, {
-          path: '/profile',
-          name: 'Profile',
-          component: Profile,
+          path: '/more',
+          name: 'More',
+          component: More,
           meta: {
             requireAuth: true
           }
@@ -39,6 +40,10 @@ export default new Router({
           meta: {
             requireAuth: true
           }
+        }, {
+          path: '/profile',
+          name: 'Profile',
+          component: Profile
         }
       ]
     }, {
