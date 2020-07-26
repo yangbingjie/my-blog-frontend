@@ -56,12 +56,15 @@
         <a href="/index"><el-button type="primary" round>去往首页</el-button></a>
       </div>
     </div>
+    <mavon-editor
+      style="height: 0%;display: none"
+      ref=md
+      fontSize="16px">
+    </mavon-editor>
   </div>
 </template>
 
 <script>
-import '../styles/markdown.css'
-
 export default {
   name: 'ArticleDetails',
   data () {
@@ -131,7 +134,7 @@ export default {
     padding: 40px 0;
     border-bottom: 1px solid #eaecef;
     min-width: 60%;
-    max-width: 100%;
+    max-width: 80%;
   }
 
   .title-header {
@@ -173,8 +176,9 @@ export default {
 
   .article-body {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
+    text-align: left;
     width: 100%;
     font-size: 18px;
     line-height: 28px;
