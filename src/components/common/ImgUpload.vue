@@ -2,9 +2,11 @@
   <div>
     <el-upload
       class="avatar-uploader"
-      action="http://localhost:8443/api/file/cover"
+      action="http://localhost:8443/api/file/uploadAvatar"
       :show-file-list="false"
       :on-success="handleAvatarSuccess"
+      :on-error="handleAvatarError"
+      :data="upLoadData"
       :before-upload="beforeAvatarUpload">
       <img v-if="imageUrl" :src="imageUrl" class="avatar">
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -17,6 +19,9 @@ export default {
   name: 'ImgUpload',
   data () {
     return {
+      upLoadData: {
+        user_id: this.$store.state.user.user_id
+      },
       imageUrl: ''
     }
   },
@@ -24,7 +29,10 @@ export default {
     handleAvatarSuccess (res) {
       this.imageUrl = res
       this.$emit('onUpload')
-      this.$message.warning('上传成功')
+      this.$message.success('上传成功')
+    },
+    handleAvatarError (res) {
+      this.$message.warning('上传失败')
     },
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'

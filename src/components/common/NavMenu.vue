@@ -7,20 +7,25 @@
       background-color="white"
       text-color="#222"
       active-text-color="#606266" class="menu">
-      <h3 class="web-name">My Blog</h3>
+      <h3 class="web-name">Pre</h3>
       <el-menu-item v-for="(item,i) in navList" :key="i" :index="item.name">
         {{ item.navItem }}
       </el-menu-item>
     </el-menu>
-    <el-dropdown @command="handleCommand">
-      <el-button plain round type="info" icon="el-icon-user" class="icon"></el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="profile">Profile</el-dropdown-item>
-        <el-dropdown-item command="settings">Settings</el-dropdown-item>
-        <el-dropdown-item command="stars">Stars</el-dropdown-item>
-        <el-dropdown-item command="signout" divided>Sign out</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+    <div class="dropdown">
+      <el-dropdown @command="handleCommand">
+        <div class="avatar-button">
+          <el-avatar v-if="user != null && user.avatar !== null" shape="circle" :size="36" :src="user.avatar"></el-avatar>
+          <i v-else class="el-icon-user default-icon"></i>
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="profile">Profile</el-dropdown-item>
+          <el-dropdown-item command="settings">Settings</el-dropdown-item>
+          <el-dropdown-item command="stars">Stars</el-dropdown-item>
+          <el-dropdown-item command="signout" divided>Sign out</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 <script>
@@ -28,6 +33,7 @@ export default {
   name: 'NavMenu',
   data () {
     return {
+      user: this.$store.state.user,
       activeIndex: this.$route.path,
       navList: [
         {name: '/index', navItem: 'Home'},
@@ -50,7 +56,7 @@ export default {
 
 <style scoped>
   .web-name{
-    margin: 17px;
+    margin: 17px 0 17px;
     padding: 0 20px;
   }
   a{
@@ -60,15 +66,16 @@ export default {
   span {
     pointer-events: none;
   }
-  .icon{
+  .default-icon{
     font-size: 20px;
-    margin: 10px;
     padding: 10px;
+    background-color: #E4E7ED;
+    border-radius: 100%;
+  }
+  .avatar-button{
     border-radius: 100%;
     border: none;
-  }
-  .icon:hover{
-    background: #C0C4CC;
+    background: none;
   }
   .menu{
     display: flex;
@@ -82,5 +89,8 @@ export default {
   }
   .el-menu.el-menu--horizontal {
     border-bottom: none;
+  }
+  .dropdown{
+    padding: 10px;
   }
 </style>

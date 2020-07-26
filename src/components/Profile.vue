@@ -11,12 +11,13 @@ export default {
   components: {ImgUpload},
   data () {
     return {
-      cover: ''
+      avatar: ''
     }
   },
   methods: {
     uploadImg () {
-      this.cover = this.$refs.imgUpload.url
+      this.avatar = this.$refs.imgUpload.url
+      this.$store.state.user.avatar = this.$refs.imgUpload.url
     }
   }
 }

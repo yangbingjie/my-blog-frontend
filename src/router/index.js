@@ -5,7 +5,8 @@ import Index from '@/components/Index'
 import Home from '@/components/Home'
 import More from '@/components/More'
 import Profile from '@/components/Profile'
-import Article from '@/components/Article'
+import ArticleDetails from '@/components/ArticleDetails'
+import ArticleEditor from '@/components/ArticleEditor'
 
 Vue.use(Router)
 
@@ -34,9 +35,9 @@ export default new Router({
             requireAuth: true
           }
         }, {
-          path: '/article',
-          name: 'Article',
-          component: Article,
+          path: '/article/details/:article_id',
+          name: 'ArticleDetails',
+          component: ArticleDetails,
           meta: {
             requireAuth: true
           }
@@ -44,6 +45,10 @@ export default new Router({
           path: '/profile',
           name: 'Profile',
           component: Profile
+        }, {
+          path: '/article/editor/:article_id',
+          name: 'ArticleEditor',
+          component: ArticleEditor
         }
       ]
     }, {

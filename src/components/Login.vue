@@ -35,14 +35,16 @@ export default {
     login () {
       var _this = this
       this.$axios
-        .post('/login', {
+        .post('/user/login', {
           username: this.loginForm.username,
           password: this.loginForm.password
         })
         .then(successResponse => {
-          // eslint-disable-next-line eqeqeq
-          if (successResponse.data.code == 200) {
-            _this.$store.commit('login', _this.loginForm)
+          if (successResponse.data.code === 200) {
+            console.log(successResponse.data.user)
+            let user = successResponse.data.user
+            user.username = _this.loginForm.username
+            _this.$store.commit('login', user)
             let path = this.$route.query.redirect
             this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
           }

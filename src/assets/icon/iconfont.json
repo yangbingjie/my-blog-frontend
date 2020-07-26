@@ -6,6 +6,20 @@
   "description": "my blog",
   "glyphs": [
     {
+      "icon_id": "15838524",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "5769645",
+      "name": "发布",
+      "font_class": "publish",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
       "icon_id": "32091",
       "name": "top",
       "font_class": "top",
