@@ -230,7 +230,23 @@ export default {
       this.inputVisible = false
       this.inputValue = ''
     },
+    checkImg (file) {
+      const isJPG = file.type === 'image/jpeg' || 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('图片只能是 jpg 或 png 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
     $imgAdd (pos, $file) {
+      if (!this.checkImg($file)){
+        this.$refs.md.$refs.toolbar_left.$imgDel(pos)
+        return
+      }
       let formdata = new FormData()
       let that = this
       formdata.append('image', $file)
@@ -255,6 +271,7 @@ export default {
             type: 'error',
             message: '图片上传失败'
           })
+          that.$refs.editor.$refs.toolbar_left.$imgDel(pos)
         }
       })
     }
