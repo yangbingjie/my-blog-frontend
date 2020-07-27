@@ -172,7 +172,7 @@ export default {
       this.article.content_html = render
       let that = this
 
-      let match_list = value.match(/!\[(\w|[\u4e00-\u9fa5])*\.(jpg|JPG|jpeg|JPEG|png|PNG)\]\(http(\w|\/|:)*(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\)/g)
+      let match_list = value.match(/!\[(.)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\]\(http(\w|\/|:)*(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\)/g)
       let img_list = []
 
       for (let i = 0; match_list != null && i < match_list.length; ++i) {
