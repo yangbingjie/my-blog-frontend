@@ -91,6 +91,6 @@ export default {
     border-bottom: none;
   }
   .dropdown{
-    padding: 10px;
+    padding: 9px;
   }
 </style>

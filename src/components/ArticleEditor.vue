@@ -125,6 +125,7 @@ export default {
         }).then(resp => {
           if (resp && resp.data && resp.data.code === 200) {
             that.article = resp.data.article
+            that.article.article_id = that.$route.params.article_id
           }
         })
       }
@@ -173,9 +174,10 @@ export default {
 
       let match_list = value.match(/!\[(\w|\.)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\]\(http(\w|\/|:)*(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\)/g)
       let img_list = []
-      let str
+      console.log(match_list)
+
       for (let i = 0; i < match_list.length; ++i) {
-        str = match_list[i].match(/\/(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)/)[0]
+        let str = match_list[i].match(/\/(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)/)[0]
         img_list[i] = str.substr(1)
       }
       console.log(img_list)
