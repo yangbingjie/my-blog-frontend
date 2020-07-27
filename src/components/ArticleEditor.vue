@@ -37,7 +37,6 @@
       <mavon-editor
         v-model="article.content_markdown"
         @imgAdd="$imgAdd"
-        @imgDel="$imgDel"
         style="height: 100%;"
         ref=md
         :toolbars="toolbar"
@@ -69,7 +68,7 @@ export default {
         content_html: '',
         content_markdown: '',
         is_public: false,
-        img_folder: ''
+        img_folder: 'null'
       },
       dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
@@ -165,12 +164,21 @@ export default {
         })
       })
     },
-    sendRequest (value, render, isPublic = false) {
+    sendRequest: function (value, render, isPublic = false) {
       value = this.$refs.md.d_value
       this.article.content_markdown = value
       render = this.$refs.md.d_render
       this.article.content_html = render
       let that = this
+
+      let match_list = value.match(/!\[(\w|\.)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\]\(http(\w|\/|:)*(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\)/g)
+      let img_list = []
+      let str
+      for (let i = 0; i < match_list.length; ++i) {
+        str = match_list[i].match(/\/(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)/)[0]
+        img_list[i] = str.substr(1)
+      }
+      console.log(img_list)
       that.$axios
         .post('/article/save', {
           article_id: that.article.article_id,
@@ -180,21 +188,22 @@ export default {
           content_html: render,
           is_public: isPublic,
           preview: that.article.preview,
-          img_folder: that.article.img_folder
+          img_folder: that.article.img_folder,
+          img_list: img_list
         }).then(res => {
-          if (res && res.data && res.data.code === 200) {
-            that.$message({
-              type: 'success',
-              message: (isPublic ? '发布' : '保存') + '成功'
-            })
-            that.$router.push({name: 'ArticleDetails', params: {article_id: res.data.article_id}})
-          } else {
-            that.$message({
-              type: 'error',
-              message: (isPublic ? '发布' : '保存') + '失败'
-            })
-          }
-        })
+        if (res && res.data && res.data.code === 200) {
+          that.$message({
+            type: 'success',
+            message: (isPublic ? '发布' : '保存') + '成功'
+          })
+          that.$router.push({name: 'ArticleDetails', params: {article_id: res.data.article_id}})
+        } else {
+          that.$message({
+            type: 'error',
+            message: (isPublic ? '发布' : '保存') + '失败'
+          })
+        }
+      })
         .catch(failResponse => {
           this.$message({
             type: 'error',
@@ -245,31 +254,6 @@ export default {
           that.$message({
             type: 'error',
             message: '图片上传失败'
-          })
-        }
-      })
-    },
-    $imgDel (pos) {
-      let that = this
-      console.log('delete file: ', pos[0])
-      that.$axios({
-        url: 'file/removeArticleImg',
-        method: 'post',
-        data: {
-          file_url: pos[0],
-          folder: that.article.img_folder
-        }
-      }).then((res) => {
-        if (res && res.data && res.data.code === 200) {
-          delete that.imgFile[pos[0]]
-          this.$message({
-            type: 'success',
-            message: '图片删除成功'
-          })
-        } else {
-          this.$message({
-            type: 'error',
-            message: '图片删除失败'
           })
         }
       })
@@ -341,5 +325,8 @@ export default {
     border: 1px dashed #DCDFE6;
     border-radius: 0;
     margin-right: 20px;
+  }
+  .editor-body >>> .dropdown-images{
+    display: none;
   }
 </style>
