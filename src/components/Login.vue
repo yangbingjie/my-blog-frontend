@@ -12,7 +12,7 @@
                     auto-complete="off" placeholder="密码"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width: 100%;background: #505458;border: none" v-on:click="login">登录</el-button>
+          <el-button type="primary" class="login-btn" v-on:click="login">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -75,5 +75,8 @@ export default {
   }
   body{
     margin: 0px;
+  }
+  .login-btn{
+    width: 100%;background: #505458;border: none
   }
 </style>

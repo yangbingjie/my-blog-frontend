@@ -8,6 +8,7 @@ import ElementUI from 'element-ui'
 import './assets/icon/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import mavonEditor from 'mavon-editor'
+import Clipboard from 'v-clipboard'
 
 var axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:8443/api'
@@ -15,6 +16,7 @@ Vue.prototype.$axios = axios
 
 Vue.config.productionTip = false
 
+Vue.use(Clipboard)
 Vue.use(ElementUI)
 Vue.use(mavonEditor)
 

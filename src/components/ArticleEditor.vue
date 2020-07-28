@@ -13,13 +13,13 @@
     </el-input>
     <el-row class="tag-list">
       <el-tag
-        :key="tag"
-        v-for="(tag, index) in dynamicTags"
+        :key="tag.tag_name"
+        v-for="(tag, index) in tag_list"
         closable
         :disable-transitions="false"
-        :type="tagList[index % tagList.length]"
-        @close="handleClose(tag)">
-        {{tag}}
+        :type="tagColors[index % tagColors.length]"
+        @close="handleClose(tag.tag_name)">
+        {{tag.tag_name}}
       </el-tag>
       <el-input
         class="input-new-tag"
@@ -31,13 +31,13 @@
         @blur="handleInputConfirm"
       >
       </el-input>
-      <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+      <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 新建标签</el-button>
     </el-row>
     <el-row class="mavon-editor">
       <mavon-editor
         v-model="article.content_markdown"
         @imgAdd="$imgAdd"
-        style="height: 100%;"
+        class="editor"
         ref=md
         :toolbars="toolbar"
         fontSize="16px">
@@ -68,12 +68,12 @@ export default {
         content_html: '',
         content_markdown: '',
         is_public: false,
-        img_folder: 'null'
+        img_folder: 'null',
       },
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      tag_list: [],
       inputVisible: false,
       inputValue: '',
-      tagList: ['warning', 'info', 'success', 'danger', ''],
+      tagColors: ['warning', 'info', 'success', 'danger', ''],
       toolbar: { bold: true, // 粗体
         italic: true, // 斜体
         header: true, // 标题
@@ -125,6 +125,7 @@ export default {
         }).then(resp => {
           if (resp && resp.data && resp.data.code === 200) {
             that.article = resp.data.article
+            that.tag_list = resp.data.article.tag_list
             that.article.article_id = that.$route.params.article_id
           }
         })
@@ -190,6 +191,7 @@ export default {
           article_id: that.article.article_id,
           author_id: that.$store.state.user.user_id,
           title: that.article.title,
+          tag_list: that.tag_list,
           content_markdown: value,
           content_html: render,
           is_public: isPublic,
@@ -217,10 +219,19 @@ export default {
           })
         })
     },
-    handleClose (tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    handleClose (tag_name) {
+      this.tag_list.splice(this.findTagIndex(tag_name), 1)
     },
-
+    findTagIndex(tag_name){
+      if (this.article && this.tag_list){
+        for (let i = 0; i < this.tag_list.length; i++) {
+          if (this.tag_list[i].tag_name === tag_name){
+            return i
+          }
+        }
+      }
+      return -1
+    },
     showInput () {
       this.inputVisible = true
       this.$nextTick(_ => {
@@ -230,8 +241,25 @@ export default {
 
     handleInputConfirm () {
       let inputValue = this.inputValue
+      inputValue = inputValue.trim()
+      if(inputValue.length > 10){
+        this.$message.error('标签长度不能超过10')
+        this.inputVisible = true
+        return
+      }
+      if (this.findTagIndex(inputValue) !== -1){
+        this.$message.error('该标签已存在')
+        this.inputVisible = true
+        return
+      }
       if (inputValue) {
-        this.dynamicTags.push(inputValue)
+        if(this.tag_list == null){
+          this.tag_list = []
+        }
+        this.tag_list.push({
+          tag_name: inputValue,
+          tag_id: null
+        })
       }
       this.inputVisible = false
       this.inputValue = ''
@@ -294,6 +322,9 @@ export default {
 
   .el-tag {
     margin: 10px;
+  }
+  .editor{
+    height: 100%;
   }
 
   .button-new-tag {

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div :v-loading="article_loading"></div>
+    <div id="loading" :v-loading="article_loading"></div>
     <div v-if="article != null" class="article">
       <h1 class="title">{{article.title}}</h1>
       <div class="title-header">
@@ -22,7 +22,8 @@
             <span :class="this.article.is_star ? 'iconfont third-favorfill': 'iconfont third-favor'"></span>
             <span class="btn-text">{{article.star_count}}</span>
           </el-button>
-          <el-button class="btn-icon" type="info" plain>
+          <el-button class="btn-icon share-btn" type="info" plain
+                     @click="shareArticle">
             <span class="iconfont third-share"></span>
           </el-button>
           <el-dropdown @command="handleMore">
@@ -32,7 +33,7 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="article.author_id === this.$store.state.user.user_id" command="edit">编辑文章</el-dropdown-item>
               <el-dropdown-item v-if="article.author_id === this.$store.state.user.user_id" command="auth">设置权限</el-dropdown-item>
-              <el-dropdown-item command="more">更多信息</el-dropdown-item>
+              <el-dropdown-item command="download">下载markdown</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -41,16 +42,26 @@
         <div class="tag-list">
           <el-tag
             class="tag-item"
-            :key="tag"
-            v-for="(tag, index) in article.tags"
+            :key="tag.tag_name"
+            v-for="(tag, index) in tag_list"
             :disable-transitions="false"
-            :type="tagList[index % tagList.length]">
-            {{tag}}
+            :type="tagColors[index % tagColors.length]">
+            {{tag.tag_name}}
           </el-tag>
         </div>
         <div class="markdown-body">
           <div v-html="article.content_html"></div>
         </div>
+        <el-dialog
+          title="提示"
+          :visible.sync="dialogVisible"
+          width="30%">
+          <span>是否{{this.article.is_public === 1 ? '取消发布': '发布文章'}}</span>
+          <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editAuth">确 定</el-button>
+    </span>
+        </el-dialog>
       </div>
     </div>
     <div v-else-if="!article_loading">
@@ -59,10 +70,10 @@
         <a href="/index"><el-button type="primary" round>去往首页</el-button></a>
       </div>
     </div>
+
     <mavon-editor
-      style="height: 0%;display: none"
-      ref=md
-      fontSize="16px">
+      class="editor"
+      ref=md>
     </mavon-editor>
   </div>
 </template>
@@ -73,10 +84,13 @@ export default {
   data () {
     return {
       article: null,
-      tagList: ['warning', 'info', 'success', 'danger', ''],
+      tag_list: [],
+      tagColors: ['warning', 'info', 'success', 'danger', ''],
       like_loading: false,
       star_loading: false,
-      article_loading: true
+      article_loading: true,
+      dialogVisible: false,
+      share_url: window.location.href
     }
   },
   mounted () {
@@ -108,6 +122,7 @@ export default {
         if (resp && resp.data && resp.data.code === 200) {
           that.article = resp.data.article
           that.article.article_id = that.$route.params.article_id
+          that.tag_list = resp.data.article.tag_list
           that.article.view_count = that.numFormat(resp.data.article.view_count)
           that.article.star_count = that.numFormat(resp.data.article.star_count)
           that.article.like_count = that.numFormat(resp.data.article.like_count)
@@ -125,8 +140,19 @@ export default {
       if (command === 'edit') {
         this.$router.push({name: 'ArticleEditor', params: {article_id: this.article.article_id}})
       } else if (command === 'auth') {
-        // TODO
+        this.dialogVisible = true
+      } else if (command === 'download'){
+        this.downloadMarkdown(this.article.title + '.md', this.article.content_markdown)
       }
+    },
+    downloadMarkdown(fileName, content){
+      let aTag = document.createElement('a');
+      let blob = new Blob([content]);
+      aTag.download = fileName;
+      aTag.href = URL.createObjectURL(blob);
+      aTag.click();
+      URL.revokeObjectURL(blob);
+      this.$message.success('下载成功')
     },
     likeArticle(){
       let that = this
@@ -177,12 +203,56 @@ export default {
         })
         that.star_loading = false
       })
+    },
+    editAuth(){
+      let that = this
+      that.$axios.post('/article/editAuth',{
+        article_id: that.article.article_id,
+        user_id: that.$store.state.user.user_id
+      }). then(resp => {
+        if (resp && resp.data && resp.data.code === 200) {
+          that.article.is_public = resp.data.is_public
+          that.$message({
+            type: 'success',
+            message: resp.data.is_public ? '发布成功': '取消发布成功'
+          })
+        }else{
+          that.$message({
+            type: 'error',
+            message: '网络错误'
+          })
+        }
+        that.dialogVisible = false
+      }).catch(failResponse => {
+        that.$message({
+          type: 'error',
+          message: '网络错误'
+        })
+        that.dialogVisible = false
+      })
+    },
+    shareArticle () {
+      let input = document.createElement("input")
+      input.value = this.share_url
+      let parent = document.getElementById("loading")
+      parent.appendChild(input)
+      input.select()
+      document.execCommand("Copy")
+      parent.removeChild(input);
+      this.$message.success('已复制分享链接')
     }
   }
 }
 </script>
 
 <style scoped>
+  .editor{
+    height: 0;
+    display: none;
+  }
+  .clipboard{
+    display: none;
+  }
   .container {
     display: flex;
     align-items: center;
