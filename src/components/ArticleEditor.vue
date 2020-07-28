@@ -172,12 +172,17 @@ export default {
       this.article.content_html = render
       let that = this
 
-      let match_list = value.match(/!\[(.)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\]\(http(\w|\/|:)*(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)\)/g)
       let img_list = []
-
-      for (let i = 0; match_list != null && i < match_list.length; ++i) {
-        let str = match_list[i].match(/\/(\w)*\.(jpg|JPG|jpeg|JPEG|png|PNG)/)[0]
-        img_list[i] = str.substr(1)
+      console.log(that.article != null)
+      if (that.article != null && that.article.img_folder != null && that.article.img_folder !== "null") {
+        let match_list = value.match(/!\[(.)*\]\(http(\w|\/|:)*(\w)*\.(jpg|png)\)/g)
+        console.log("match_list", match_list)
+        for (let i = 0; match_list != null && i < match_list.length; ++i) {
+          if (match_list[i].indexOf(that.article.img_folder !== -1)) {
+            let str = match_list[i].match(/\/(\w)*\.(jpg|png)/)[0]
+            img_list[i] = str.substr(1)
+          }
+        }
       }
       console.log(img_list)
       that.$axios

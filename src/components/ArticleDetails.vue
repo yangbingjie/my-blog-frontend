@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <div :v-loading="article_loading"></div>
     <div v-if="article != null" class="article">
       <h1 class="title">{{article.title}}</h1>
       <div class="title-header">
@@ -10,13 +11,15 @@
           </div>
         </div>
         <div class="icon-list">
-          <el-button class="btn-icon" type="info" plain>
-            <span class="iconfont third-appreciate">
+          <el-button class="btn-icon" type="info" plain v-on:click="likeArticle"
+                     :loading="this.like_loading" >
+            <span :class="this.article.is_like ? 'iconfont third-appreciatefill' : 'iconfont third-appreciate'">
               <span class="btn-text">{{article.like_count}}</span>
             </span>
           </el-button>
-          <el-button class="btn-icon" type="info" plain>
-            <span class="iconfont third-like"></span>
+          <el-button class="btn-icon" type="info" plain v-on:click="starArticle"
+                     :loading="this.star_loading">
+            <span :class="this.article.is_star ? 'iconfont third-favorfill': 'iconfont third-favor'"></span>
             <span class="btn-text">{{article.star_count}}</span>
           </el-button>
           <el-button class="btn-icon" type="info" plain>
@@ -50,7 +53,7 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else-if="!article_loading">
       <div class="ErrorPage-text"><h1 class="ErrorPage-title">404</h1>
         <p class="ErrorPage-subtitle">你似乎来到了没有知识存在的荒原</p>
         <a href="/index"><el-button type="primary" round>去往首页</el-button></a>
@@ -70,7 +73,10 @@ export default {
   data () {
     return {
       article: null,
-      tagList: ['warning', 'info', 'success', 'danger', '']
+      tagList: ['warning', 'info', 'success', 'danger', ''],
+      like_loading: false,
+      star_loading: false,
+      article_loading: true
     }
   },
   mounted () {
@@ -94,6 +100,7 @@ export default {
     },
     loadArticle () {
       let that = this
+      that.article_loading = true
       that.$axios.post('/article/getArticleById', {
         article_id: that.$route.params.article_id,
         user_id: that.$store.state.user.user_id
@@ -105,6 +112,13 @@ export default {
           that.article.star_count = that.numFormat(resp.data.article.star_count)
           that.article.like_count = that.numFormat(resp.data.article.like_count)
         }
+        that.article_loading = false
+      }).catch(failResponse => {
+        that.$message({
+          type: 'error',
+          message: '网络错误'
+        })
+        that.article_loading = false
       })
     },
     handleMore (command) {
@@ -113,6 +127,56 @@ export default {
       } else if (command === 'auth') {
         // TODO
       }
+    },
+    likeArticle(){
+      let that = this
+      that.like_loading = true
+      that.$axios.post('/article/like',{
+        article_id: that.article.article_id,
+        user_id: that.$store.state.user.user_id
+      }). then(resp => {
+        if (resp && resp.data && resp.data.code === 200) {
+          that.article.is_like = resp.data.is_like
+          that.article.like_count = resp.data.like_count
+        }else{
+          that.$message({
+            type: 'error',
+            message: '点赞失败'
+          })
+        }
+        that.like_loading = false
+      }).catch(failResponse => {
+        that.$message({
+          type: 'error',
+          message: '点赞失败'
+        })
+        that.like_loading = false
+      })
+    },
+    starArticle(){
+      let that = this
+      that.star_loading = true
+      that.$axios.post('/article/star',{
+        article_id: that.article.article_id,
+        user_id: that.$store.state.user.user_id
+      }). then(resp => {
+        if (resp && resp.data && resp.data.code === 200) {
+          that.article.is_star = resp.data.is_star
+          that.article.star_count = resp.data.star_count
+        }else{
+          that.$message({
+            type: 'error',
+            message: '收藏失败'
+          })
+        }
+        that.star_loading = false
+      }).catch(failResponse => {
+        that.$message({
+          type: 'error',
+          message: '收藏失败'
+        })
+        that.star_loading = false
+      })
     }
   }
 }
