@@ -175,17 +175,20 @@ export default {
 
       let img_list = []
       console.log(that.article != null)
+      let cover = ""
       if (that.article != null && that.article.img_folder != null && that.article.img_folder !== "null") {
-        let match_list = value.match(/!\[(.)*\]\(http(\w|\/|:)*(\w)*\.(jpg|png)\)/g)
+        let match_list = value.match(/!\[(.)*\]\(http(\w|\/|:|\.)*(\w)*\.(jpg|png)\)/g)
         console.log("match_list", match_list)
+        cover = match_list[0].match(/http(.)*\.(jpg|png)/)[0]
+        console.log("cover", cover)
         for (let i = 0; match_list != null && i < match_list.length; ++i) {
-          if (match_list[i].indexOf(that.article.img_folder !== -1)) {
+          if (match_list[i].indexOf(that.article.img_folder) !== -1) {
             let str = match_list[i].match(/\/(\w)*\.(jpg|png)/)[0]
-            img_list[i] = str.substr(1)
+            img_list.push(str.substr(1))
           }
         }
       }
-      console.log(img_list)
+      console.log("img_list", img_list)
       that.$axios
         .post('/article/save', {
           article_id: that.article.article_id,
@@ -197,6 +200,7 @@ export default {
           is_public: isPublic,
           preview: that.article.preview,
           img_folder: that.article.img_folder,
+          cover: cover,
           img_list: img_list
         }).then(res => {
         if (res && res.data && res.data.code === 200) {

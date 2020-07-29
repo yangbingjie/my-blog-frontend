@@ -70,7 +70,9 @@
         <a href="/index"><el-button type="primary" round>去往首页</el-button></a>
       </div>
     </div>
-
+    <el-button class="to-top" v-on:click="toTop">
+      <i class="iconfont third-top to-top-icon"></i>
+    </el-button>
     <mavon-editor
       class="editor"
       ref=md>
@@ -240,6 +242,10 @@ export default {
       document.execCommand("Copy")
       parent.removeChild(input);
       this.$message.success('已复制分享链接')
+    },
+    toTop () {
+      // IE和Safari不支持原始的平滑滚动,需要安装smoothscroll-polyfill
+      window.scroll({ top: 0, left: 0, behavior: 'smooth' });
     }
   }
 }
@@ -339,5 +345,29 @@ export default {
     margin: 20px 0;
     display: flex;
     justify-content: left;
+  }
+  .to-top{
+    background-color: rgba(0, 0, 0, 0.40);
+    position: fixed;
+    border-radius: 50%;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+  }
+  .to-top:hover{
+    background-color: rgba(0, 0, 0, 0.55);
+  }
+  .to-top:focus{
+    border: none;
+    outline: none;
+  }
+  .to-top-icon{
+    font-size: 30px;
+    color: white;
   }
 </style>
