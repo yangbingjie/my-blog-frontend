@@ -257,6 +257,7 @@ export default {
         return
       }
       if (inputValue) {
+        inputValue = inputValue.toLowerCase()
         if(this.tag_list == null){
           this.tag_list = []
         }

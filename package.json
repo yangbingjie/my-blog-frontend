@@ -17,11 +17,12 @@
     "ajv": "^6.12.3",
     "axios": "^0.19.2",
     "element-ui": "^2.13.2",
+    "macy": "^2.5.1",
     "mavon-editor": "^2.9.0",
     "smoothscroll-polyfill": "^0.4.4",
-    "v-clipboard": "^2.2.3",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
+    "vue-waterfall": "^1.0.6",
     "vuex": "^3.5.1"
   },
   "devDependencies": {

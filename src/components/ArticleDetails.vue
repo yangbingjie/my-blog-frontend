@@ -11,8 +11,7 @@
           </div>
         </div>
         <div class="icon-list">
-          <el-button class="btn-icon" type="info" plain v-on:click="likeArticle"
-                     :loading="this.like_loading" >
+          <el-button class="btn-icon" type="info" plain v-on:click="likeArticle" :loading="this.like_loading" >
             <span :class="this.article.is_like ? 'iconfont third-appreciatefill' : 'iconfont third-appreciate'">
               <span class="btn-text">{{article.like_count}}</span>
             </span>
@@ -73,10 +72,6 @@
     <el-button class="to-top" v-on:click="toTop">
       <i class="iconfont third-top to-top-icon"></i>
     </el-button>
-    <mavon-editor
-      class="editor"
-      ref=md>
-    </mavon-editor>
   </div>
 </template>
 
@@ -104,11 +99,11 @@ export default {
         return '10w+'
       } else if (num >= 10000) {
         num = num / 10000
-        num.toFixed(2)
+        num.toFixed(1)
         return num + 'w'
       } else if (num >= 1000) {
         num = num / 1000
-        num.toFixed(2)
+        num.toFixed(1)
         return num + 'k'
       } else {
         return num
@@ -156,7 +151,7 @@ export default {
       URL.revokeObjectURL(blob);
       this.$message.success('下载成功')
     },
-    likeArticle(){
+    likeArticle(e){
       let that = this
       that.like_loading = true
       that.$axios.post('/article/like',{
@@ -252,13 +247,7 @@ export default {
 </script>
 
 <style scoped>
-  .editor{
-    height: 0;
-    display: none;
-  }
-  .clipboard{
-    display: none;
-  }
+
   .container {
     display: flex;
     align-items: center;
@@ -324,15 +313,9 @@ export default {
     line-height: 28px;
   }
 
-  .tag {
-    margin-top: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: left;
-  }
-
   .tag-item {
     margin-right: 10px;
+    cursor: default;
   }
 
   .btn-text {
