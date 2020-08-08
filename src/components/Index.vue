@@ -20,21 +20,10 @@
         :type="tagColors[index % tagColors.length]">
         {{tag.tag_name}}
       </el-tag>
-      <el-input
-        class="input-new-tag"
-        v-if="inputVisible"
-        v-model="inputValue"
-        ref="saveTagInput"
-        size="small"
-        @keyup.enter.native="handleInputConfirm"
-        @blur="handleInputConfirm"
-      >
-      </el-input>
-      <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加标签</el-button>
     </div>
     <div class="container">
       <div id="macy-container">
-        <div macy-complete="1" v-on:click="toArticle(article.article_id, $event)" class="article-item" v-for="(article, index) in article_list">
+        <div macy-complete="1" v-if="article.show" v-on:click="toArticle(article.article_id, $event)" class="article-item" v-for="(article, index) in article_list">
           <img :src="article.cover !== '' ? article.cover : '../static/default_cover.jpg'" alt="" class="article-img">
           <div class="author-container">
             <div class="author">
@@ -45,6 +34,18 @@
           <div class="article-text">
             <h2 class="article-title">{{article.title}}</h2>
             <p class="article-preview">{{article.preview}}</p>
+            <div class="article-tag-list">
+              <el-tag
+                      class="tag-item"
+                      :key="tag.tag_name"
+                      v-for="(tag, index) in article.tag_list"
+                      :disable-transitions="false"
+                      :effect="tag.type"
+                      v-on:click="chooseTag(index)"
+                      :type="tagColors[index % tagColors.length]">
+                {{tag.tag_name}}
+              </el-tag>
+            </div>
               <div class="btn-list">
                 <el-button class="view-count" type="info" plain >
                   <span class="iconfont el-icon-view"></span>
@@ -79,15 +80,15 @@
         search_type: "所有",
         inputValue: '',
         keyWord: "",
-        leftInd: 1,
-        rightInd: 2,
+        leftInd: -1,
+        rightInd: 0,
         all_tag_list: [],
         tagColors: ['warning', 'info', 'success', 'danger', ''],
         article_list: []
       }
     },
     mounted () {
-      this.macy = Macy({
+        this.macy = Macy({
         container: '#macy-container',
         trueOrder: false,
         waitForImages: false,
@@ -100,6 +101,7 @@
           450: 1
         }
       });
+        this.search()
     },
     methods: {
       toArticle: function(article_id, $event){
@@ -176,13 +178,13 @@
           return num
         }
       },
-      getSearchType (search_name) {
-        if (search_name === '所有'){
-          return 'all'
-        }else if(search_name === '标题'){
+      getSearchType () {
+        if (this.search_type === '标题'){
           return 'title'
-        }else if(search_name === '作者'){
+        }else if(this.search_type === '作者'){
           return 'author_name'
+        }else{
+          return 'all'
         }
       },
       search (){
@@ -190,7 +192,7 @@
         that.article_loading = true
         that.$axios.post('/article/search', {
           user_id: that.$store.state.user.user_id,
-          search_type: 'all',
+          search_type: that.getSearchType(),
           query: that.keyWord
         }).then(resp => {
           if (resp && resp.data && resp.data.code === 200) {
@@ -205,6 +207,7 @@
               that.article_list[i].view_count = that.numFormat(resp.data.article_list[i].view_count)
               that.article_list[i].star_count = that.numFormat(resp.data.article_list[i].star_count)
               that.article_list[i].like_count = that.numFormat(resp.data.article_list[i].like_count)
+              that.article_list[i].show = true
             }
           }
           that.macy.recalculate();
@@ -239,6 +242,27 @@
       newArticle () {
         this.$router.push({name: 'ArticleEditor', params: {article_id: 'create'}})
       },
+      filterArticle (){
+        let all_tags = this.all_tag_list.slice(0, this.rightInd)
+        let article_tags
+        let isContain
+        for (let i = 0; i < this.article_list.length; i++) {
+          isContain = true
+          article_tags = []
+          for (let j = 0; j < this.article_list[i].tag_list.length; j++) {
+            article_tags.push(this.article_list[i].tag_list[j].tag_id)
+          }
+          for (let k = 0; k < all_tags.length; k++) {
+            if(-1 === article_tags.indexOf(all_tags[k].tag_id)){
+              isContain = false
+              break
+            }
+          }
+          this.article_list[i].show = isContain
+        }
+        this.macy.recalculate();
+        this.macy.runOnImageLoad();
+      },
       chooseTag (index){
         let tag = this.all_tag_list[index]
         if (tag.type === 'plain'){
@@ -254,6 +278,7 @@
           this.leftInd--
           this.rightInd--
         }
+        this.filterArticle()
       }
     },
   }
@@ -387,6 +412,11 @@
     justify-content: center;
     align-items: center;
   }
+  .article-tag-list{
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+  }
   .tag-list {
     margin: 20px 20px 20px 90px;
     display: flex;
@@ -396,12 +426,10 @@
     font-size: 16px;
   }
   .tag-item {
-    margin-right: 10px;
+    margin: 5px;
     cursor: default;
   }
-  .el-tag + .el-tag {
-    margin-left: 10px;
-  }
+
   .button-new-tag {
     margin-left: 10px;
     height: 32px;
@@ -420,10 +448,5 @@
     background: none;
     color: #606266;
     cursor: default;
-  }
-  .input-new-tag {
-    width: 90px;
-    margin-left: 10px;
-    vertical-align: bottom;
   }
 </style>
