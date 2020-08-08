@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="avatar-container">
     <el-upload
       class="avatar-uploader"
       action="http://localhost:8443/api/file/uploadAvatar"
@@ -7,8 +7,13 @@
       :on-success="handleAvatarSuccess"
       :on-error="handleAvatarError"
       :data="upLoadData"
+      :disabled="!isEdit"
       :before-upload="beforeAvatarUpload">
-      <img v-if="imageUrl" :src="imageUrl" class="avatar">
+
+      <div v-if="!isEdit" >
+        <img v-if="imageUrl!=null && imageUrl !==''" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-user default-icon"></i>
+      </div>
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
     </el-upload>
   </div>
@@ -22,7 +27,16 @@ export default {
       upLoadData: {
         user_id: this.$store.state.user.user_id
       },
-      imageUrl: ''
+    }
+  },
+  props:{
+    isEdit:{
+      default: false,
+      type:Boolean
+    },
+    imageUrl:{
+      default: '',
+      type: String
     }
   },
   methods: {
@@ -75,5 +89,16 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+  .avatar-container{
+    display: flex;
+    justify-content: center;
+  }
+  .default-icon{
+    font-size: 160px;
+    color: #303133;
+    padding: 10px;
+    background-color: #E4E7ED;
+    border-radius: 100%;
   }
 </style>

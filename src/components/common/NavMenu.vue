@@ -21,7 +21,6 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="profile">Profile</el-dropdown-item>
           <el-dropdown-item command="settings">Settings</el-dropdown-item>
-          <el-dropdown-item command="stars">Stars</el-dropdown-item>
           <el-dropdown-item command="signout" divided>Sign out</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -37,17 +36,20 @@ export default {
       activeIndex: this.$route.path,
       navList: [
         {name: '/index', navItem: 'Home'},
-        {name: '/article', navItem: 'Blog'},
+        {name: '/article', navItem: 'Article'},
         {name: '/more', navItem: 'More'}
       ]
     }
   },
   methods: {
     handleCommand (command) {
-      this.$message('click on item ' + command)
       if (command === 'profile') {
         let path = this.$route.query.redirect
-        this.$router.replace({path: path === '/' || path === undefined ? '/profile' : path})
+        this.$router.push({name: 'Profile', params: {user_id: this.$store.state.user.user_id}})
+      }else if(command === 'settings'){
+        this.$message('click on item ' + command)
+      }else if(command === 'signout'){
+        this.$message('click on item ' + command)
       }
     }
   }

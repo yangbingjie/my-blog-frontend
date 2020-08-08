@@ -4,7 +4,13 @@
     <div v-if="article != null" class="article">
       <h1 class="title">{{article.title}}</h1>
       <div class="title-header">
-        <div class="author">{{article.author_name}} 更新于：{{article.update_time}}
+        <div class="author">
+          <div v-on:click="toProfile">
+            <el-avatar class="author-avatar" :src="article.author_avatar" :size="50"></el-avatar>
+          </div>
+          <span>
+            {{article.author_name}} 更新于：{{article.update_time}}
+          </span>
           <div class="view-count">
             <i class="el-icon-view"></i>
             <span>{{article.view_count}}</span>
@@ -94,6 +100,11 @@ export default {
     this.loadArticle()
   },
   methods: {
+    toProfile () {
+      console.log('afds')
+      let that = this
+      this.$router.push({name: 'Profile', params: {'user_id': that.article.author_id}})
+    },
     numFormat (num) {
       if (num >= 100000) {
         return '10w+'
@@ -268,6 +279,7 @@ export default {
 
   .title-header {
     display: flex;
+    align-items: baseline;
     justify-content: space-between;
     flex-wrap: wrap;
     color: #606266;
@@ -292,6 +304,7 @@ export default {
   .author {
     margin: 10px 0;
     display: flex;
+    align-items: baseline;
     font-size: 14px;
   }
 
@@ -348,6 +361,10 @@ export default {
   .to-top:focus{
     border: none;
     outline: none;
+  }
+  .author-avatar{
+    margin-right: 10px;
+    border: 1px solid white;
   }
   .to-top-icon{
     font-size: 30px;

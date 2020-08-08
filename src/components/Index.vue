@@ -1,6 +1,5 @@
 <template>
   <div class="index">
-<!--    <el-button type="success" plain v-on:click="newArticle">新建文章</el-button>-->
     <el-input placeholder="搜索文章" v-model="keyWord" @change="search" class="input-with-select">
       <el-select v-model="search_type" slot="prepend">
         <el-option label="所有" value="1"></el-option>
@@ -23,7 +22,8 @@
     </div>
     <div class="container">
       <div id="macy-container">
-        <div macy-complete="1" v-if="article.show" v-on:click="toArticle(article.article_id, $event)" class="article-item" v-for="(article, index) in article_list">
+        <div macy-complete="1" v-if="article.show" v-on:click="toArticle(article.article_id, $event)"
+             class="article-item" v-for="(article, index) in article_list">
           <img :src="article.cover !== '' ? article.cover : '../static/default_cover.jpg'" alt="" class="article-img">
           <div class="author-container">
             <div class="author">
@@ -66,6 +66,11 @@
           </div>
         </div>
       </div>
+
+      <div v-if="noArticle === true" class="ErrorPage-text"><h1 class="ErrorPage-title"></h1>
+        <p class="ErrorPage-subtitle">啊哦，没有找到文章</p>
+        <el-button type="primary" round v-on:click="newArticle">新建文章</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +81,7 @@
     data () {
       return {
         macy: {},
+        noArticle: false,
         inputVisible: false,
         search_type: "所有",
         inputValue: '',
@@ -198,6 +204,7 @@
           if (resp && resp.data && resp.data.code === 200) {
             that.article_list = resp.data.article_list
             that.all_tag_list = resp.data.all_tag_list
+            that.noArticle = that.article_list.length === 0;
             for (let i = 0; i < that.all_tag_list.length; i++) {
               that.all_tag_list[i]['type'] = 'plain'
             }

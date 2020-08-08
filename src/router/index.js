@@ -7,7 +7,7 @@ import More from '@/components/More'
 import Profile from '@/components/Profile'
 import ArticleDetails from '@/components/ArticleDetails'
 import ArticleEditor from '@/components/ArticleEditor'
-
+import Article from '@/components/Article'
 Vue.use(Router)
 
 export default new Router({
@@ -28,6 +28,13 @@ export default new Router({
             requireAuth: true
           }
         }, {
+          path: '/article',
+          name: 'Article',
+          component: Article,
+          meta: {
+            requireAuth: true
+          }
+        }, {
           path: '/more',
           name: 'More',
           component: More,
@@ -42,7 +49,7 @@ export default new Router({
             requireAuth: true
           }
         }, {
-          path: '/profile',
+          path: '/profile/:user_id',
           name: 'Profile',
           component: Profile
         }, {
